@@ -1,0 +1,36 @@
+@*<Router AppAssembly="@typeof(Program).Assembly">
+        <Found Context="routeData">
+            <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
+        </Found>
+        <NotFound>
+            <LayoutView Layout="@typeof(MainLayout)">
+                <p>Sorry, there's nothing at this address.</p>
+            </LayoutView>
+        </NotFound>
+    </Router>*@
+<button type="button" class="btn btn-primary"
+        onclick="exampleJsFunctions.returnArrayAsyncJs()">
+    Trigger .NET static method ReturnArrayAsync
+</button>
+
+<button type="button" class="btn btn-primary"
+        onclick="exampleJsFunctions.callMyHelper()">
+    Call my helper
+</button>
+
+@inject IJSRuntime JsRuntime
+
+@code {
+    [JSInvokable]
+    public static Task<int[]> ReturnArrayAsync()
+    {
+        return Task.FromResult(new int[] { 1, 2, 3 });
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        Console.Write(this);
+        DotNetObjectReference<MyHelper> objRef = DotNetObjectReference.Create(new MyHelper("pepe"));
+        await JsRuntime.InvokeVoidAsync("exampleJsFunctions.setMyHelper", objRef);
+    }
+}
